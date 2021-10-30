@@ -6,6 +6,7 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/joho/godotenv"
+	"github.com/maxkuzn/grocery-list-bot/internal/app/router"
 )
 
 func main() {
@@ -32,7 +33,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	routerHandler := router.NewRouter(bot)
+	routerHandler := router.New(bot)
 
 	for update := range updates {
 		routerHandler.HandleUpdate(update)
