@@ -19,7 +19,7 @@ func New(bot *tgbotapi.BotAPI) *Router {
 }
 
 func (r *Router) HandleUpdate(update tgbotapi.Update) {
-	if appropriateMessage(update.Message) {
+	if appropriateMessage(update) {
 		r.commander.HandleMessage(update)
 		return
 	}

@@ -2,6 +2,7 @@ package commander
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
 )
 
 type Commander struct {
@@ -27,9 +28,9 @@ func (c *Commander) HandleMessage(update tgbotapi.Update) {
 	args := update.Message.CommandArguments()
 	switch update.Message.Command() {
 	case "help":
-		c.Help(chatID, userID, args)
+		c.HelpCommand(chatID, userID, args)
 	default:
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer.UnknownCommand)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer.UnknownCommands)
 		c.bot.Send(msg)
 		return
 	}
