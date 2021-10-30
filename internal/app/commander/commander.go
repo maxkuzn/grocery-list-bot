@@ -29,6 +29,22 @@ func (c *Commander) HandleMessage(update tgbotapi.Update) {
 	switch update.Message.Command() {
 	case "help":
 		c.HelpCommand(chatID, userID, args)
+	case "create":
+		c.CreateCommand(chatID, userID, args)
+	case "switch":
+		c.SwitchCommand(chatID, userID, args)
+	case "delete":
+		c.DeleteCommand(chatID, userID, args)
+	case "add":
+		c.AddCommand(chatID, userID, args)
+	case "remove":
+		c.RemoveCommand(chatID, userID, args)
+	case "check":
+		c.CheckCommand(chatID, userID, args)
+	case "uncheck":
+		c.UncheckCommand(chatID, userID, args)
+	case "show":
+		c.ShowCommand(chatID, userID, args)
 	default:
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer.UnknownCommands)
 		c.bot.Send(msg)
