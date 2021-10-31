@@ -1,6 +1,9 @@
 package model
 
-import "errors"
+import (
+	"errors"
+	"sort"
+)
 
 var (
 	ItemNotFoundErr = errors.New("item not found")
@@ -61,4 +64,15 @@ func (l *List) ModifyItem(item Item) error {
 	}
 	l.Items[item.ID] = item
 	return nil
+}
+
+func (l *List) GetOrderedItems() []Item {
+	var items []Item
+	for _, item := range l.Items {
+		items = append(items, item)
+	}
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].ID < items[j].ID
+	})
+	return items
 }

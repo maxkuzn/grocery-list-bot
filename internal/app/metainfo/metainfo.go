@@ -5,6 +5,7 @@ import "github.com/maxkuzn/grocery-list-bot/internal/model"
 type UserMetaInfo struct {
 	AnyListSelected bool
 	SelectedList    model.ListID // optional
+	Items           []model.Item
 
 	// TODO
 	// UnfinishedCommand string // optional
@@ -35,7 +36,7 @@ func (s *MetaInfoStorer) SetList(userID model.UserID, list model.List) {
 	s.users[userID] = UserMetaInfo{
 		AnyListSelected: true,
 		SelectedList:    list.ID,
-		// TODO: set list
+		Items:           list.GetOrderedItems(),
 	}
 }
 

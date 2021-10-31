@@ -11,7 +11,7 @@ func (c *Commander) ShowCommand(userID model.UserID, tg tgUserInfo, args string)
 
 	metaInfo := c.metaInfo.Get(userID)
 	if !metaInfo.AnyListSelected {
-		c.send(tg.ChatID, answer.CannotShow)
+		c.send(tg.ChatID, answer.ListNotSelected)
 		return
 	}
 	list, err := c.db.GetList(userID, metaInfo.SelectedList)

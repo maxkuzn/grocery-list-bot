@@ -1,15 +1,30 @@
 package commander
 
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
 	"github.com/maxkuzn/grocery-list-bot/internal/model"
 )
 
 func (c *Commander) AddCommand(userID model.UserID, tg tgUserInfo, args string) {
-	_ = userID
-	_ = args
+	itemDescription := args
+	if len(itemDescription) == 0 {
+		c.send(tg.ChatID, answer.AddHelp)
+		return
+	}
 
-	msg := tgbotapi.NewMessage(tg.ChatID, answer.NotImplemented)
-	c.bot.Send(msg)
+	metaInfo := c.metaInfo.Get(userID)
+	if !metaInfo.AnyListSelected {
+		c.send(tg.ChatID, answer.ListNotSelected)
+		return
+	}
+
+	err := c.db.AddItem(userID, metaInfo.SelectedList, model.Item{
+		Description: itemDescription,
+	})
+	if err != nil {
+		c.send(tg.ChatID, answer.InternalError(err))
+		return
+	}
+
+	c.send(tg.ChatID, answer.ItemAdded())
 }

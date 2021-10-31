@@ -40,19 +40,20 @@ const (
 	listCreated  = "Cписок %q [id=%d] успешно создан"
 	listDeleted  = "Cписок %q [id=%d] успешно удален"
 	listSelected = "Выбран список %q [id=%d]"
+	itemAdded    = "Запись добавлена в список"
+	itemDeleted  = "Запись удалена из списока"
 
+	showEmptyList  = "Список %q пустой"
 	showListHeader = "Список %q:"
 	showListItem   = "%d. %s"
 
 	listNameExists  = "Cписок c именем %q уже существует"
 	listDoesntExist = "Cписока c именем %q не существует"
-	CannotShow      = "Ни один список не выбран\nВыберете список командой /switch"
+	ListNotSelected = "Ни один список не выбран\nВыберете список командой /switch или создайте командой /create\nПодробнее: /help"
+	InvalidIndex    = "Записи с таким номером не существует\nПосмотреть актуальный список /show"
 )
 
-func InternalError(err error) string {
-	return fmt.Sprintf(internalError, err)
-}
-
+// Success
 func ListCreated(listName string, listID model.ListID) string {
 	return fmt.Sprintf(listCreated, listName, listID)
 }
@@ -65,18 +66,35 @@ func ListSelected(listName string, listID model.ListID) string {
 	return fmt.Sprintf(listSelected, listName, listID)
 }
 
+func ItemAdded() string {
+	return fmt.Sprintf(itemAdded)
+}
+
+func ItemDeleted() string {
+	return fmt.Sprintf(itemDeleted)
+}
+
+func ShowList(list model.List) string {
+	if len(list.Items) == 0 {
+		return fmt.Sprintf(showEmptyList, list.Name)
+	}
+	text := fmt.Sprintf(showListHeader, list.Name) + "\n"
+	items := list.GetOrderedItems()
+	for i, item := range items {
+		text += fmt.Sprintf(showListItem, i+1, item.Description) + "\n"
+	}
+	return text
+}
+
+// Errors
+func InternalError(err error) string {
+	return fmt.Sprintf(internalError, err)
+}
+
 func ListNameExists(listName string) string {
 	return fmt.Sprintf(listNameExists, listName)
 }
 
 func ListDoesntExist(listName string) string {
 	return fmt.Sprintf(listDoesntExist, listName)
-}
-
-func ShowList(list model.List) string {
-	text := fmt.Sprintf(showListHeader, list.Name) + "\n"
-	for i, item := range list.Items {
-		text += fmt.Sprintf(showListItem, i, item.Description) + "\n"
-	}
-	return text
 }
