@@ -41,8 +41,12 @@ const (
 	listDeleted  = "Cписок %q [id=%d] успешно удален"
 	listSelected = "Выбран список %q [id=%d]"
 
+	showListHeader = "Список %q:"
+	showListItem   = "%d. %s"
+
 	listNameExists  = "Cписок c именем %q уже существует"
 	listDoesntExist = "Cписока c именем %q не существует"
+	CannotShow      = "Ни один список не выбран\nВыберете список командой /switch"
 )
 
 func InternalError(err error) string {
@@ -67,4 +71,12 @@ func ListNameExists(listName string) string {
 
 func ListDoesntExist(listName string) string {
 	return fmt.Sprintf(listDoesntExist, listName)
+}
+
+func ShowList(list model.List) string {
+	text := fmt.Sprintf(showListHeader, list.Name) + "\n"
+	for i, item := range list.Items {
+		text += fmt.Sprintf(showListItem, i, item.Description) + "\n"
+	}
+	return text
 }

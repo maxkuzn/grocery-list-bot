@@ -18,6 +18,6 @@ func (c *Commander) SwitchCommand(userID model.UserID, tg tgUserInfo, args strin
 		return
 	}
 
-	c.metaInfo.SetList(userID, listID)
+	c.metaInfo.SelectList(userID, listID)
 	c.send(tg.ChatID, answer.ListSelected(listName, listID))
 }

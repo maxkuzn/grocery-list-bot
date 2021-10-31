@@ -27,6 +27,6 @@ func (c *Commander) CreateCommand(userID model.UserID, tg tgUserInfo, args strin
 	}
 
 	c.idBinder.BindList(tg.UserName, listName, listID)
-	c.metaInfo.SetList(userID, listID)
+	c.metaInfo.SelectList(userID, listID)
 	c.send(tg.ChatID, answer.ListCreated(listName, listID))
 }

@@ -85,8 +85,19 @@ func (db *InMemoryDB) GetAllLists(userID model.UserID) ([]model.List, error) {
 	panic("Not implemented")
 }
 
-func (db *InMemoryDB) GetList(listID model.ListID) (model.List, error) {
-	panic("Not implemented")
+func (db *InMemoryDB) GetList(userID model.UserID, listID model.ListID) (list model.List, err error) {
+	listPtr, ok := db.lists[listID]
+	if !ok {
+		err = ListDoesntExist
+		return
+	}
+	// TODO: check access rights
+	if list.Owner != userID {
+		err = NotEnoughAccessRights
+		return
+	}
+	list = *listPtr
+	return
 }
 
 // List modification

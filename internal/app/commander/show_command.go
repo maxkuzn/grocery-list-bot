@@ -7,9 +7,21 @@ import (
 )
 
 func (c *Commander) ShowCommand(userID model.UserID, tg tgUserInfo, args string) {
-	_ = userID
 	_ = args
 
-	msg := tgbotapi.NewMessage(tg.ChatID, answer.NotImplemented)
+	metaInfo := c.metaInfo.Get(userID)
+	if !metaInfo.AnyListSelected {
+		c.send(tg.ChatID, answer.CannotShow)
+		return
+	}
+	list, err := c.db.GetList(userID, metaInfo.SelectedList)
+	if err != nil {
+		c.send(tg.ChatID, answer.InternalError(err))
+		return
+	}
+
+	c.metaInfo.SetList(userID, list)
+
+	msg := tgbotapi.NewMessage(tg.ChatID, answer.ShowList(list))
 	c.bot.Send(msg)
 }

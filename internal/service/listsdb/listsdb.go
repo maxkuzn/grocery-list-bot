@@ -24,7 +24,7 @@ type ListsDB interface {
 
 	// Get info about users lists
 	GetAllLists(userID model.UserID) ([]model.List, error)
-	GetList(listID model.ListID) (model.List, error)
+	GetList(userID model.UserID, listID model.ListID) (model.List, error)
 
 	// List modification methods
 	AddItem(userID model.UserID, listID model.ListID, item model.Item) error
