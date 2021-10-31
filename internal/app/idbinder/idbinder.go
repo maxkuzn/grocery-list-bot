@@ -1,24 +1,35 @@
 package idbinder
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/maxkuzn/grocery-list-bot/internal/model"
 )
 
+const sep = "#"
+
+func buildKey(userName string, listName string) string {
+	return userName + "#" + listName
+}
+
 type IDBinder struct {
-	tg2User map[int64]model.UserID
-	user2Tg map[model.UserID]int64
+	tg2User map[int]model.UserID
+	user2Tg map[model.UserID]int
+
+	listName2ID map[string]model.ListID
 }
 
 func New() *IDBinder {
 	return &IDBinder{
-		tg2User: make(map[int64]model.UserID),
-		user2Tg: make(map[model.UserID]int64),
+		tg2User: make(map[int]model.UserID),
+		user2Tg: make(map[model.UserID]int),
+
+		listName2ID: make(map[string]model.ListID),
 	}
 }
 
-func (b *IDBinder) BindUser(tgID int64, userID model.UserID) error {
+func (b *IDBinder) BindUser(tgID int, userID model.UserID) error {
 	if _, ok := b.tg2User[tgID]; ok {
 		return fmt.Errorf("Tg user %d already binded", tgID)
 	}
@@ -30,18 +41,27 @@ func (b *IDBinder) BindUser(tgID int64, userID model.UserID) error {
 	return nil
 }
 
-func (b *IDBinder) Tg2User(tgID int64) (userID model.UserID, ok bool) {
+func (b *IDBinder) Tg2User(tgID int) (userID model.UserID, ok bool) {
 	userID, ok = b.tg2User[tgID]
 	return
 }
 
-func (b *IDBinder) User2Tg(userID model.UserID) (tgID int64, ok bool) {
+func (b *IDBinder) User2Tg(userID model.UserID) (tgID int, ok bool) {
 	tgID, ok = b.user2Tg[userID]
 	return
 }
 
-func (b *IDBinder) Tg2ModelList() {
+func (b *IDBinder) BindList(userName string, listName string, listID model.ListID) error {
+	key := buildKey(userName, listName)
+	if _, ok := b.listName2ID[key]; ok {
+		return errors.New("List with this name already binded")
+	}
+	b.listName2ID[key] = listID
+	return nil
 }
 
-func (b *IDBinder) Model2TgList() {
+func (b *IDBinder) ListName2ID(userName string, listName string) (listID model.ListID, ok bool) {
+	key := buildKey(userName, listName)
+	listID, ok = b.listName2ID[key]
+	return
 }

@@ -5,10 +5,9 @@ import (
 	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
 )
 
-func (c *Commander) HelpCommand(chatID int64, userID int, args string) {
-	_ = userID
+func (c *Commander) HelpCommand(tg tgMeta, args string) {
 	_ = args
 
-	msg := tgbotapi.NewMessage(chatID, answer.Help)
+	msg := tgbotapi.NewMessage(tg.ChatID, answer.Help)
 	c.bot.Send(msg)
 }

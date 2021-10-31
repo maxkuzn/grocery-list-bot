@@ -1,23 +1,43 @@
 package commander
 
 import (
+	"strings"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
+	"github.com/maxkuzn/grocery-list-bot/internal/app/idbinder"
+	"github.com/maxkuzn/grocery-list-bot/internal/service/listsdb"
 )
 
-type Commander struct {
-	bot *tgbotapi.BotAPI
+type tgMeta struct {
+	ChatID   int64
+	UserID   int
+	UserName string
 }
 
-func New(bot *tgbotapi.BotAPI) *Commander {
+type Commander struct {
+	bot      *tgbotapi.BotAPI
+	db       listsdb.ListsDB
+	idBinder *idbinder.IDBinder
+}
+
+func New(bot *tgbotapi.BotAPI, db listsdb.ListsDB) *Commander {
 	return &Commander{
-		bot: bot,
+		bot:      bot,
+		db:       db,
+		idBinder: idbinder.New(),
 	}
 }
 
 func (c *Commander) HandleMessage(update tgbotapi.Update) {
 	chatID := update.Message.Chat.ID
 	userID := update.Message.From.ID
+	userName := update.Message.From.UserName
+	info := tgMeta{
+		ChatID:   chatID,
+		UserID:   userID,
+		UserName: userName,
+	}
 
 	if !update.Message.IsCommand() {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer.OnlyCommands)
@@ -25,16 +45,16 @@ func (c *Commander) HandleMessage(update tgbotapi.Update) {
 		return
 	}
 
-	args := update.Message.CommandArguments()
+	args := strings.TrimSpace(update.Message.CommandArguments())
 	switch update.Message.Command() {
 	case "help":
-		c.HelpCommand(chatID, userID, args)
+		c.HelpCommand(info, args)
 	case "create":
-		c.CreateCommand(chatID, userID, args)
+		c.CreateCommand(info, args)
 	case "switch":
 		c.SwitchCommand(chatID, userID, args)
 	case "delete":
-		c.DeleteCommand(chatID, userID, args)
+		c.DeleteCommand(info, args)
 	case "add":
 		c.AddCommand(chatID, userID, args)
 	case "remove":

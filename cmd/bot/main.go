@@ -7,9 +7,11 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/joho/godotenv"
 	"github.com/maxkuzn/grocery-list-bot/internal/app/router"
+	"github.com/maxkuzn/grocery-list-bot/internal/service/listsdb"
 )
 
 func main() {
+	// Setup bot
 	_ = godotenv.Load()
 
 	token, found := os.LookupEnv("TOKEN")
@@ -24,6 +26,10 @@ func main() {
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
+	// Setup service
+	db := listsdb.NewInMemoryDB()
+
+	// Run bot
 	u := tgbotapi.UpdateConfig{
 		Timeout: 60,
 	}
@@ -33,7 +39,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	routerHandler := router.New(bot)
+	routerHandler := router.New(bot, db)
 
 	for update := range updates {
 		routerHandler.HandleUpdate(update)

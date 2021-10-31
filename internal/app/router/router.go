@@ -4,6 +4,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
 	"github.com/maxkuzn/grocery-list-bot/internal/app/commander"
+	"github.com/maxkuzn/grocery-list-bot/internal/service/listsdb"
 )
 
 type Router struct {
@@ -11,10 +12,10 @@ type Router struct {
 	commander *commander.Commander
 }
 
-func New(bot *tgbotapi.BotAPI) *Router {
+func New(bot *tgbotapi.BotAPI, db listsdb.ListsDB) *Router {
 	return &Router{
 		bot:       bot,
-		commander: commander.New(bot),
+		commander: commander.New(bot, db),
 	}
 }
 
@@ -44,6 +45,9 @@ func appropriateMessage(update tgbotapi.Update) bool {
 		return false
 	}
 	if len(update.Message.Text) == 0 {
+		return false
+	}
+	if len(update.Message.From.UserName) == 0 {
 		return false
 	}
 	return true

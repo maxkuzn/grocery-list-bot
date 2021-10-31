@@ -1,7 +1,14 @@
 package answer
 
+import (
+	"fmt"
+
+	"github.com/maxkuzn/grocery-list-bot/internal/model"
+)
+
 const (
 	CannotRespond = "Я не могу ответить на предыдущее сообщение :("
+	internalError = "Произошла внутренняя ошибка. Приношу свои извинения!\n%v"
 
 	HelpSuggestion  = "Посмотреть список команд /help."
 	OnlyCommands    = "Пока что я умею отвечать только на команды.\n" + HelpSuggestion
@@ -29,4 +36,24 @@ const (
 		CheckHelp + "\n" +
 		UncheckHelp + "\n" +
 		ShowHelp + "\n"
+
+	listCreated     = "Cписок %q [id=%d] успешно создан"
+	listNameExists  = "Cписок c именем %q уже существует"
+	listDoesntExist = "Cписока c именем %q не существует"
 )
+
+func InternalError(err error) string {
+	return fmt.Sprintf(internalError, err)
+}
+
+func ListCreated(listName string, listID model.ListID) string {
+	return fmt.Sprintf(listCreated, listName, listID)
+}
+
+func ListNameExists(listName string) string {
+	return fmt.Sprintf(listNameExists, listName)
+}
+
+func ListDoesntExist(listName string) string {
+	return fmt.Sprintf(listDoesntExist, listName)
+}

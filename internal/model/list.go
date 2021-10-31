@@ -10,19 +10,19 @@ type Item struct {
 type ListID uint64
 
 type List struct {
-	ID      ListID
-	OwnerID UserID
-	Owner   *User
+	ID    ListID
+	Owner UserID
+	Name  string
 	// TODO: add share feature
 	// Users   map[UserID]*User
 
-	Items []*Item
+	Items []Item
 }
 
-func NewList(id ListID, owner *User) *List {
+func NewList(id ListID, owner UserID, name string) *List {
 	return &List{
-		ID:      id,
-		OwnerID: owner.ID,
-		Owner:   owner,
+		ID:    id,
+		Owner: owner,
+		Name:  name,
 	}
 }
