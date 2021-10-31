@@ -1,14 +1,23 @@
 package commander
 
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
+	"github.com/maxkuzn/grocery-list-bot/internal/model"
 )
 
-func (c *Commander) SwitchCommand(chatID int64, userID int, args string) {
-	_ = userID
-	_ = args
+func (c *Commander) SwitchCommand(userID model.UserID, tg tgUserInfo, args string) {
+	listName := args
+	if len(listName) == 0 {
+		c.send(tg.ChatID, answer.SwitchHelp)
+		return
+	}
 
-	msg := tgbotapi.NewMessage(chatID, answer.NotImplemented)
-	c.bot.Send(msg)
+	listID, ok := c.idBinder.ListName2ID(tg.UserName, listName)
+	if !ok {
+		c.send(tg.ChatID, answer.ListDoesntExist(listName))
+		return
+	}
+
+	c.metaInfo.SetList(userID, listID)
+	c.send(tg.ChatID, answer.ListSelected(listName, listID))
 }

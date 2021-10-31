@@ -37,7 +37,10 @@ const (
 		UncheckHelp + "\n" +
 		ShowHelp + "\n"
 
-	listCreated     = "Cписок %q [id=%d] успешно создан"
+	listCreated  = "Cписок %q [id=%d] успешно создан"
+	listDeleted  = "Cписок %q [id=%d] успешно удален"
+	listSelected = "Выбран список %q [id=%d]"
+
 	listNameExists  = "Cписок c именем %q уже существует"
 	listDoesntExist = "Cписока c именем %q не существует"
 )
@@ -48,6 +51,14 @@ func InternalError(err error) string {
 
 func ListCreated(listName string, listID model.ListID) string {
 	return fmt.Sprintf(listCreated, listName, listID)
+}
+
+func ListDeleted(listName string, listID model.ListID) string {
+	return fmt.Sprintf(listDeleted, listName, listID)
+}
+
+func ListSelected(listName string, listID model.ListID) string {
+	return fmt.Sprintf(listSelected, listName, listID)
 }
 
 func ListNameExists(listName string) string {

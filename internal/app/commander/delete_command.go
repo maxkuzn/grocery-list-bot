@@ -4,20 +4,11 @@ import (
 	"errors"
 
 	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
+	"github.com/maxkuzn/grocery-list-bot/internal/model"
 	"github.com/maxkuzn/grocery-list-bot/internal/service/listsdb"
 )
 
-func (c *Commander) DeleteCommand(tg tgMeta, args string) {
-	userID, ok := c.idBinder.Tg2User(tg.UserID)
-	if !ok {
-		userID = c.db.CreateUser()
-		err := c.idBinder.BindUser(tg.UserID, userID)
-		if err != nil {
-			c.send(tg.ChatID, answer.InternalError(err))
-			return
-		}
-	}
-
+func (c *Commander) DeleteCommand(userID model.UserID, tg tgUserInfo, args string) {
 	listName := args
 	if len(listName) == 0 {
 		c.send(tg.ChatID, answer.DeleteHelp)
@@ -27,7 +18,6 @@ func (c *Commander) DeleteCommand(tg tgMeta, args string) {
 	listID, ok := c.idBinder.ListName2ID(tg.UserName, listName)
 	if !ok {
 		c.send(tg.ChatID, answer.ListDoesntExist(listName))
-		// TODO: send error
 		return
 	}
 	err := c.db.RemoveList(userID, listID)
@@ -41,5 +31,6 @@ func (c *Commander) DeleteCommand(tg tgMeta, args string) {
 		return
 	}
 
-	c.send(tg.ChatID, answer.ListCreated(listName, listID))
+	c.metaInfo.UnsetList(userID)
+	c.send(tg.ChatID, answer.ListDeleted(listName, listID))
 }

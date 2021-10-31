@@ -4,20 +4,11 @@ import (
 	"errors"
 
 	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
+	"github.com/maxkuzn/grocery-list-bot/internal/model"
 	"github.com/maxkuzn/grocery-list-bot/internal/service/listsdb"
 )
 
-func (c *Commander) CreateCommand(tg tgMeta, args string) {
-	userID, ok := c.idBinder.Tg2User(tg.UserID)
-	if !ok {
-		userID = c.db.CreateUser()
-		err := c.idBinder.BindUser(tg.UserID, userID)
-		if err != nil {
-			c.send(tg.ChatID, answer.InternalError(err))
-			return
-		}
-	}
-
+func (c *Commander) CreateCommand(userID model.UserID, tg tgUserInfo, args string) {
 	listName := args
 	if len(listName) == 0 {
 		c.send(tg.ChatID, answer.CreateHelp)
@@ -36,5 +27,6 @@ func (c *Commander) CreateCommand(tg tgMeta, args string) {
 	}
 
 	c.idBinder.BindList(tg.UserName, listName, listID)
+	c.metaInfo.SetList(userID, listID)
 	c.send(tg.ChatID, answer.ListCreated(listName, listID))
 }

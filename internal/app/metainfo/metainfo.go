@@ -11,19 +11,30 @@ type UserMetaInfo struct {
 }
 
 type MetaInfoStorer struct {
-	users map[model.UserID]*UserMetaInfo
+	users map[model.UserID]UserMetaInfo
 }
 
 func New() *MetaInfoStorer {
 	return &MetaInfoStorer{
-		users: make(map[model.UserID]*UserMetaInfo),
+		users: make(map[model.UserID]UserMetaInfo),
 	}
 }
 
-func (s *MetaInfoStorer) GetLastAction(userID model.UserID) *UserMetaInfo {
+func (s *MetaInfoStorer) Get(userID model.UserID) UserMetaInfo {
 	return s.users[userID]
 }
 
-func (s *MetaInfoStorer) SetLastAction(userID model.UserID, info *UserMetaInfo) {
-	s.users[userID] = info
+func (s *MetaInfoStorer) SetList(userID model.UserID, listID model.ListID) {
+	s.users[userID] = UserMetaInfo{
+		User:            userID,
+		AnyListSelected: true,
+		SelectedList:    listID,
+	}
+}
+
+func (s *MetaInfoStorer) UnsetList(userID model.UserID) {
+	s.users[userID] = UserMetaInfo{
+		User:            userID,
+		AnyListSelected: false,
+	}
 }
