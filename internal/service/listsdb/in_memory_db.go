@@ -102,13 +102,41 @@ func (db *InMemoryDB) GetList(userID model.UserID, listID model.ListID) (list mo
 
 // List modification
 func (db *InMemoryDB) AddItem(userID model.UserID, listID model.ListID, item model.Item) error {
-	panic("Not implemented")
+	list, ok := db.lists[listID]
+	if !ok {
+		return ListDoesntExist
+	}
+	// TODO: check access rights
+	if list.Owner != userID {
+		return NotEnoughAccessRights
+	}
+
+	list.AddItem(item)
+	return nil
 }
 
 func (db *InMemoryDB) RemoveItem(userID model.UserID, listID model.ListID, itemID model.ItemID) error {
-	panic("Not implemented")
+	list, ok := db.lists[listID]
+	if !ok {
+		return ListDoesntExist
+	}
+	// TODO: check access rights
+	if list.Owner != userID {
+		return NotEnoughAccessRights
+	}
+
+	return list.RemoveItem(itemID)
 }
 
 func (db *InMemoryDB) ModifyItem(userID model.UserID, listID model.ListID, item model.Item) error {
-	panic("Not implemented")
+	list, ok := db.lists[listID]
+	if !ok {
+		return ListDoesntExist
+	}
+	// TODO: check access rights
+	if list.Owner != userID {
+		return NotEnoughAccessRights
+	}
+
+	return list.ModifyItem(item)
 }
