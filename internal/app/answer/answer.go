@@ -6,6 +6,15 @@ import (
 	"github.com/maxkuzn/grocery-list-bot/internal/model"
 )
 
+// All messages in MarkdownV2
+// The next symbols escaped automatically
+// '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'
+
+// To use markdown write
+// %[1]s = "*" - bold
+// %[2]s = "_" - italic
+// %[3]s = "__" - underline
+// %[4]s = "~" - strikethrough
 const (
 	CannotRespond = "Я не могу ответить на предыдущее сообщение :("
 	internalError = "Произошла внутренняя ошибка. Приношу свои извинения!\n%v"
@@ -15,16 +24,16 @@ const (
 	UnknownCommands = "Я не знаю такой команды.\n" + HelpSuggestion
 	NotImplemented  = "Пока что это я не умею, но обязательно научусь в будущем!"
 
-	HelpHelp    = "/help - Вывести это сообщение"
+	HelpHelp    = "/help - вывести это сообщение"
 	CreateHelp  = "/create <имя списка> - создать список с именем <имя списка>"
 	SwitchHelp  = "/switch <имя списка> - переключиться на список с именем <имя списка>"
 	DeleteHelp  = "/delete <имя списка> - удалить список с именем <имя списка>"
 	AddHelp     = "/add <запись> - добавить запись в список"
 	RemoveHelp  = "/remove <N> - удалить из списка запись под номером <N>"
-	CheckHelp   = "/check <N> - отметить запись под номером <N>"
-	UncheckHelp = "/uncheck <N> - снять отметку c запись под номером <N>"
+	CheckHelp   = "/check <N> - %[4]sотметить запись под номером <N>%[4]s"
+	UncheckHelp = "/uncheck <N> - %[3]sснять отметку c запись под номером <N>%[3]s"
 	ShowHelp    = "/show - показать список"
-	Help        = "Список команд:\n" +
+	Help        = "%[1]sСписок%[1]s %[2]sкоманд%[2]s:\n" +
 		HelpHelp + "\n" +
 		"\n" +
 		CreateHelp + "\n" +
@@ -43,9 +52,10 @@ const (
 	itemAdded    = "Запись добавлена в список"
 	itemDeleted  = "Запись удалена из списока"
 
-	showEmptyList  = "Список %q пустой"
-	showListHeader = "Список %q:"
-	showListItem   = "%d. %s"
+	showEmptyList       = "Список %q пустой"
+	showListHeader      = "Список %q:"
+	showListItem        = "%d. %s"
+	showCheckedListItem = "%d. %%[4]s%s%%[4]s"
 
 	listNameExists  = "Cписок c именем %q уже существует"
 	listDoesntExist = "Cписока c именем %q не существует"
@@ -81,7 +91,11 @@ func ShowList(list model.List) string {
 	text := fmt.Sprintf(showListHeader, list.Name) + "\n"
 	items := list.GetOrderedItems()
 	for i, item := range items {
-		text += fmt.Sprintf(showListItem, i+1, item.Description) + "\n"
+		if item.Checked {
+			text += fmt.Sprintf(showCheckedListItem, i+1, item.Description) + "\n"
+		} else {
+			text += fmt.Sprintf(showListItem, i+1, item.Description) + "\n"
+		}
 	}
 	return text
 }
