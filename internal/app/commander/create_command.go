@@ -1,13 +1,6 @@
 package commander
 
-import (
-	"errors"
-
-	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
-	"github.com/maxkuzn/grocery-list-bot/internal/model"
-	"github.com/maxkuzn/grocery-list-bot/internal/service/listsdb"
-)
-
+/*
 func (c *Commander) CreateCommand(userID model.UserID, tg tgUserInfo, args string) {
 	listName := args
 	if len(listName) == 0 {
@@ -30,3 +23,4 @@ func (c *Commander) CreateCommand(userID model.UserID, tg tgUserInfo, args strin
 	c.metaInfo.SelectList(userID, listID)
 	c.send(tg.ChatID, answer.ListCreated(listName, listID))
 }
+*/

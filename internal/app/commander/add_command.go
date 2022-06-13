@@ -1,10 +1,6 @@
 package commander
 
-import (
-	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
-	"github.com/maxkuzn/grocery-list-bot/internal/model"
-)
-
+/*
 func (c *Commander) AddCommand(userID model.UserID, tg tgUserInfo, args string) {
 	itemDescription := args
 	if len(itemDescription) == 0 {
@@ -28,3 +24,4 @@ func (c *Commander) AddCommand(userID model.UserID, tg tgUserInfo, args string) 
 
 	c.send(tg.ChatID, answer.ItemAdded())
 }
+*/

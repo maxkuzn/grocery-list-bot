@@ -1,34 +1,30 @@
 package commander
 
 import (
+	"errors"
+	"github.com/maxkuzn/grocery-list-bot/internal/app/sender"
+	"github.com/maxkuzn/grocery-list-bot/internal/service/usersdb"
 	"strings"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/maxkuzn/grocery-list-bot/internal/app/answer"
-	"github.com/maxkuzn/grocery-list-bot/internal/app/idbinder"
-	"github.com/maxkuzn/grocery-list-bot/internal/app/metainfo"
-	"github.com/maxkuzn/grocery-list-bot/internal/service/listsdb"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type tgUserInfo struct {
 	ChatID   int64
-	UserID   int
+	UserID   int64
 	UserName string
 }
 
 type Commander struct {
-	bot      *tgbotapi.BotAPI
-	db       listsdb.ListsDB
-	idBinder *idbinder.IDBinder
-	metaInfo *metainfo.MetaInfoStorer
+	usersDB usersdb.UsersDB
+
+	sender *sender.Sender
 }
 
-func New(bot *tgbotapi.BotAPI, db listsdb.ListsDB) *Commander {
+func New(bot *tgbotapi.BotAPI, usersDB usersdb.UsersDB, s *sender.Sender) *Commander {
 	return &Commander{
-		bot:      bot,
-		db:       db,
-		idBinder: idbinder.New(),
-		metaInfo: metainfo.New(),
+		usersDB: usersDB,
+		sender:  s,
 	}
 }
 
@@ -39,20 +35,19 @@ func (c *Commander) HandleMessage(update tgbotapi.Update) {
 		UserName: update.Message.From.UserName,
 	}
 
-	userID, ok := c.idBinder.Tg2User(info.UserID)
-	if !ok {
-		userID = c.db.CreateUser()
-		err := c.idBinder.BindUser(info.UserID, userID)
-		if err != nil {
-			c.send(info.ChatID, answer.InternalError(err))
-			return
-		}
+	userID, err := c.usersDB.GetUserID(info.UserID)
+	if errors.Is(err, usersdb.ErrNotFound) {
+		userID, err = c.usersDB.CreateUser(info.UserID)
+	}
+
+	if err != nil {
+		c.sender.SendInternalError(info.ChatID, err)
+		return
 	}
 
 	if !update.Message.IsCommand() {
 		// TODO: accept two messaged commands
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer.OnlyCommands)
-		c.bot.Send(msg)
+		c.sender.SendOnlyCommands(info.ChatID)
 		return
 	}
 
@@ -61,29 +56,20 @@ func (c *Commander) HandleMessage(update tgbotapi.Update) {
 	case "help":
 		c.HelpCommand(userID, info, args)
 	case "create":
-		c.CreateCommand(userID, info, args)
-	case "switch":
-		c.SwitchCommand(userID, info, args)
-	case "delete":
-		c.DeleteCommand(userID, info, args)
+		// c.CreateCommand(userID, info, args)
+		c.sender.SendNotImplemented(update.Message.Chat.ID)
 	case "add":
-		c.AddCommand(userID, info, args)
-	case "remove":
-		c.RemoveCommand(userID, info, args)
-	case "check":
-		c.CheckCommand(userID, info, args)
-	case "uncheck":
-		c.UncheckCommand(userID, info, args)
+		// c.AddCommand(userID, info, args)
+		c.sender.SendNotImplemented(update.Message.Chat.ID)
 	case "show":
-		c.ShowCommand(userID, info, args)
+		// c.ShowCommand(userID, info, args)
+		c.sender.SendNotImplemented(update.Message.Chat.ID)
 	default:
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer.UnknownCommands)
-		c.bot.Send(msg)
+		c.sender.SendUnknownCommand(info.ChatID, update.Message.Command())
 		return
 	}
 }
 
 func (c *Commander) HandleCallback(update tgbotapi.Update) {
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, answer.NotImplemented)
-	c.bot.Send(msg)
+	c.sender.SendNotImplemented(update.Message.Chat.ID)
 }

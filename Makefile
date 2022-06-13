@@ -1,7 +1,11 @@
 .PHONY: run
 run:
-	go run cmd/bot/main.go
+	./bin/bot
 
 .PHONY: build
 build:
-	go build -o bot cmd/bot/main.go
+	go build -o bin/bot cmd/bot/main.go
+
+.PHONY: test
+test:
+	go test -race ./internal/...

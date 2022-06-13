@@ -1,39 +1,22 @@
 package listsdb
 
-import (
-	"errors"
-
-	"github.com/maxkuzn/grocery-list-bot/internal/model"
-)
-
-var (
-	UserDoesntExist = errors.New("User doesnt exists")
-	ListDoesntExist = errors.New("List doesnt exists")
-
-	ListNameDuplicate     = errors.New("List with this name already exists")
-	NotEnoughAccessRights = errors.New("Not enough access rights")
-)
+import "github.com/maxkuzn/grocery-list-bot/internal/model"
 
 type ListsDB interface {
-	// Above user methods
-	CreateUser() model.UserID
+	// Lists creation
+	CreateList(owner model.UserID) (model.ListID, error)
+	DeleteList(listID model.ListID) error
 
-	// List handle methods
-	CreateList(userID model.UserID, name string) (model.ListID, error)
-	RemoveList(userID model.UserID, listID model.ListID) error
+	// List modification
+	AddItem(listID model.ListID, item model.Item) error
+	GetItems(listID model.ListID) ([]model.Item, error)
 
-	// Get info about users lists
-	GetAllLists(userID model.UserID) ([]model.List, error)
-	GetList(userID model.UserID, listID model.ListID) (model.List, error)
+	GetLists(userID model.UserID) ([]model.ListID, error)
+	GetOwnedLists(userID model.UserID) ([]model.ListID, error)
+	GetWritableLists(userID model.UserID) ([]model.ListID, error)
+	GetReadableLists(userID model.UserID) ([]model.ListID, error)
 
-	// List modification methods
-	AddItem(userID model.UserID, listID model.ListID, item model.Item) error
-	RemoveItem(userID model.UserID, listID model.ListID, item model.ItemID) error
-	ModifyItem(userID model.UserID, listID model.ListID, item model.Item) error
-	// CheckItem(userID model.UserID, listID model.ListID, item model.ItemID)
-	// UnckechItem(userID model.UserID, listID model.ListID, item model.ItemID)
-
-	// TODO: Share feature
-	// AddUser(ownerID model.UserID, listID model.ListID, shareWith model.UserID, readOnly bool)
-	// RemoveUser(ownerID model.UserID, listID model.ListID, shareWith model.UserID)
+	MakeOwner(userID model.UserID, listID model.ListID) error
+	AddReadAccessRights(userID model.UserID, listID model.ListID) error
+	AddWriteAccessRights(userID model.UserID, listID model.ListID) error
 }

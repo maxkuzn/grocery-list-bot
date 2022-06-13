@@ -1,4 +1,6 @@
 .env
+bin
+.idea
 
 # Binaries for programs and plugins
 *.exe
