@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+
 	defer bot.StopReceivingUpdates()
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)

@@ -2,6 +2,7 @@ package router
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+
 	"github.com/maxkuzn/grocery-list-bot/internal/app/commander"
 	"github.com/maxkuzn/grocery-list-bot/internal/app/sender"
 )

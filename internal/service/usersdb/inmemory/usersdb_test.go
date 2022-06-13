@@ -1,13 +1,17 @@
 package inmemory
 
 import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	"github.com/maxkuzn/grocery-list-bot/internal/model"
 	"github.com/maxkuzn/grocery-list-bot/internal/service/usersdb"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestInMemoryUsersDB(t *testing.T) {
+	t.Parallel()
+
 	type putStruct struct {
 		value   int64
 		want    model.UserID
@@ -76,7 +80,11 @@ func TestInMemoryUsersDB(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
+
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
 			db := NewInMemoryUsersDB()
 
 			for _, put := range tc.put {

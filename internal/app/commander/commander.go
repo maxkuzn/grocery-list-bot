@@ -2,11 +2,12 @@ package commander
 
 import (
 	"errors"
-	"github.com/maxkuzn/grocery-list-bot/internal/app/sender"
-	"github.com/maxkuzn/grocery-list-bot/internal/service/usersdb"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+
+	"github.com/maxkuzn/grocery-list-bot/internal/app/sender"
+	"github.com/maxkuzn/grocery-list-bot/internal/service/usersdb"
 )
 
 type tgUserInfo struct {
@@ -52,6 +53,7 @@ func (c *Commander) HandleMessage(update tgbotapi.Update) {
 	}
 
 	args := strings.TrimSpace(update.Message.CommandArguments())
+
 	switch update.Message.Command() {
 	case "help":
 		c.HelpCommand(userID, info, args)
@@ -66,6 +68,7 @@ func (c *Commander) HandleMessage(update tgbotapi.Update) {
 		c.sender.SendNotImplemented(update.Message.Chat.ID)
 	default:
 		c.sender.SendUnknownCommand(info.ChatID, update.Message.Command())
+
 		return
 	}
 }
